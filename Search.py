@@ -2,6 +2,7 @@ from SearchRule import SearchRule
 from SearchTree import SearchTree
 from State import State
 
+
 class Search:
     def __init__(self, magic_square_size=3, rules_desc=False) -> None:
         self.__tree = SearchTree()
@@ -24,20 +25,33 @@ class Search:
 
     def __get_next_rule(self, state: State) -> SearchRule:
         try:
-            next_rule = self.rules[state.current_rule_index]
-            state.update_current_rule_index()
-            
-            return next_rule
+            return self.rules[state.current_rule_index]
         except IndexError:
             return None
 
     def backtracking_search(self):
         current_state = self.tree.root
-        failure = False
+        new_state: State = None
         success = False
 
-        while not failure or not success:
-            pass
+        while not success:
+            while not new_state:
+                next_rule = self.__get_next_rule(current_state)
+
+                if next_rule:
+                    new_state = current_state.visit_new_state(next_rule)
+                else:
+                    # Deadlock state
+                    current_state = current_state.parent
+                    new_state = None
+
+            if new_state.is_objective():
+                success = True
+            else:
+                current_state = new_state
+                new_state = None
+
+        print(new_state.magic_square)
 
     def breadth_search(self):
         pass
