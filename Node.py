@@ -1,19 +1,20 @@
 from __future__ import annotations
-from MagicSquare import MagicSquare
 
 
 class Node:
-    def __init__(self, magic_square: MagicSquare = None) -> None:
-        self.__magic_square: MagicSquare = magic_square or MagicSquare()
+    def __init__(self, parent: Node = None) -> None:
         self.__children: list[Node] = []
+        self.__parent: Node = parent
 
-    @property
-    def magic_square(self) -> MagicSquare:
-        return self.__magic_square
+        self.__parent.append_child(self)
 
     @property
     def children(self) -> list[Node]:
         return self.__children
+
+    @property
+    def parent(self) -> Node:
+        return self.__parent
 
     def get_child(self, position: int) -> Node | None:
         try:
