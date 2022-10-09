@@ -1,19 +1,24 @@
 from __future__ import annotations
 
 from MagicSquare import MagicSquare
-from Node import Node
 from SearchRule import SearchRule
 
 
-class State(Node):
-    def __init__(self, magic_square: MagicSquare = None, parent: Node = None, current_magic_square_number=1) -> None:
-        super().__init__(parent)
-        self.__magic_square: MagicSquare = magic_square or MagicSquare()
-        self.__magic_square_size = len(self.__magic_square[0])
+class State:
+    def __init__(self, magic_square: MagicSquare = None, parent: State = None) -> None:
+        self.__children: list[State] = []
+        self.__parent: State = parent
+
+        if self.__parent:
+            self.__parent.append_child(self)
+
+        if magic_square:
+            self.__magic_square: MagicSquare = MagicSquare(magic_square.square, magic_square.current_number)
+        else:
+            self.__magic_square: MagicSquare = MagicSquare()
+
+        self.__magic_square_size = len(self.__magic_square.square[0])
         self.__current_rule_index = 0
-        self.__max_rule_index = 8
-        self.__current_magic_square_number = current_magic_square_number
-        self.__valid = True
 
     @property
     def magic_square(self) -> MagicSquare:
@@ -32,47 +37,55 @@ class State(Node):
         return self.__current_magic_square_number
 
     @property
-    def valid(self) -> bool:
-        return self.__valid
+    def children(self) -> list[State]:
+        return self.__children
 
-    @valid.setter
-    def valid(self, value: bool) -> None:
-        self.__valid = value
+    @property
+    def parent(self) -> State:
+        return self.__parent
 
-    def __reset_current_rule_index(self) -> None:
-        self.current_rule = 0
+    def get_child(self, position: int) -> State | None:
+        try:
+            return self.children[position]
+        except IndexError:
+            return None
 
-    def update_current_rule_index(self) -> None:
-        self.current_rule += 1
-        if self.current_rule > self.__max_rule_index:
-            # Forçar impasse (?)
-            self.__reset_current_rule_index()
+    def append_child(self, value: State) -> None:
+        self.children.append(value)
+    
+    def __remove_last_child(self) -> None:
+        if len(self.children):
+            self.children.pop()
 
-    def visit_state(self, rule: SearchRule) -> State:
-        new_state = State(self.magic_square, super().parent,
-                          self.current_magic_square_number + 1)
+    def __update_current_rule_index(self) -> None:
+        self.__current_rule_index += 1
 
-        if self.magic_square[rule.row][rule.column] is not 0:
-            new_state.valid = False
-            return new_state
+    def visit_new_state(self, rule: SearchRule) -> State | None:
+        self.__update_current_rule_index()
 
-        new_state.magic_square[rule.row][rule.column] = new_state.current_magic_square_number
+        new_state = State(self.magic_square, self)
 
-        row_sum, column_sum, primary_diagonal_sum, secondary_diagonal_sum = 0
-        row_count, column_count, primary_diagonal_count, secondary_diagonal_count = 0
+        if new_state.magic_square.square[rule.row][rule.column] != 0:
+            self.__remove_last_child()
+            return None
+
+        new_state.magic_square.insert_next_number(rule.row, rule.column)
+
+        row_sum, column_sum, primary_diagonal_sum, secondary_diagonal_sum = [0, 0, 0, 0]
+        row_count, column_count, primary_diagonal_count, secondary_diagonal_count = [0, 0, 0, 0]
 
         for i in range(0, new_state.magic_square_size):
-            row_sum += new_state.magic_square[rule.row][i]
-            column_sum += new_state.magic_square[i][rule.column]
-            primary_diagonal_sum += new_state.magic_square[i][i]
-            secondary_diagonal_sum += new_state.magic_square[i][new_state.magic_square_size - i - 1]
+            row_sum += new_state.magic_square.square[rule.row][i]
+            column_sum += new_state.magic_square.square[i][rule.column]
+            primary_diagonal_sum += new_state.magic_square.square[i][i]
+            secondary_diagonal_sum += new_state.magic_square.square[i][new_state.magic_square_size - i - 1]
 
-            row_count += 1 if new_state.magic_square[rule.row][i] is not 0 else 0
-            column_count += 1 if new_state.magic_square[i][rule.column] is not 0 else 0
-            primary_diagonal_count += 1 if new_state.magic_square[i][i] is not 0 else 0
-            secondary_diagonal_count += 1 if new_state.magic_square[i][new_state.magic_square_size - i - 1] is not 0 else 0
+            row_count += 1 if new_state.magic_square.square[rule.row][i] != 0 else 0
+            column_count += 1 if new_state.magic_square.square[i][rule.column] != 0 else 0
+            primary_diagonal_count += 1 if new_state.magic_square.square[i][i] != 0 else 0
+            secondary_diagonal_count += 1 if new_state.magic_square.square[i][new_state.magic_square_size - i - 1] != 0 else 0
 
-        new_state.valid = not (
+        new_state_invalid = (
             row_count == 2 and row_sum < 6) or (
             column_count == 2 and column_sum < 6) or (
             row_count == 3 and row_sum != 15) or (
@@ -80,4 +93,24 @@ class State(Node):
             primary_diagonal_count == 3 and primary_diagonal_sum != 15) or (
             secondary_diagonal_count == 3 and secondary_diagonal_sum != 15)
 
+        if new_state_invalid:
+            self.__remove_last_child()
+            return None
+
         return new_state
+    
+    def is_objective(self) -> bool:
+        for i in range(0, self.magic_square_size):
+            row_sum = sum(self.magic_square.square[i])
+            column_sum = sum([self.magic_square.square[j][i] for j in range(0, self.magic_square_size)])
+
+            if row_sum != 15 or column_sum != 15:
+                return False
+        
+        primary_diagonal_sum = sum([self.magic_square.square[i][i] for i in range(0, self.magic_square_size)])
+        secondary_diagonal_sum = sum([self.magic_square.square[i][self.magic_square_size - i - 1] for i in range(0, self.magic_square_size)])
+        
+        if primary_diagonal_sum != 15 or secondary_diagonal_sum != 15:
+            return False
+        
+        return True
