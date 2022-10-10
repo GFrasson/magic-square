@@ -1,3 +1,4 @@
+import pydot
 from queue import Queue
 
 from SearchRule import SearchRule
@@ -7,6 +8,7 @@ from State import State
 
 class Search:
     def __init__(self, magic_square_size=3, rules_desc=False) -> None:
+        self.__graph = pydot.Dot("search_tree", graph_type="digraph")
         self.__tree = SearchTree()
         self.__rules: list[SearchRule] = list()
 
@@ -42,6 +44,10 @@ class Search:
 
                 if next_rule:
                     new_state = current_state.visit_new_state(next_rule)
+
+                    if new_state:
+                        self.__graph.add_node(pydot.Node(new_state.magic_square.__str__(), shape="box"))
+                        self.__graph.add_edge(pydot.Edge(new_state.parent.magic_square.__str__(), new_state.magic_square.__str__()))
                 else:
                     # Deadlock state
                     current_state = current_state.parent
@@ -53,6 +59,7 @@ class Search:
                 current_state = new_state
                 new_state = None
 
+        self.__graph.write_png("backtracking-search-tree.png")
         return new_state
 
     def breadth_search(self) -> State:
@@ -78,10 +85,13 @@ class Search:
 
                         if new_state:
                             open_states_queue.put(new_state)
+                            self.__graph.add_node(pydot.Node(new_state.magic_square.__str__(), shape="box"))
+                            self.__graph.add_edge(pydot.Edge(new_state.parent.magic_square.__str__(), new_state.magic_square.__str__()))
                     else:
                         closed_states.append(current_state)
                         break
 
+        self.__graph.write_png("breadth-search-tree.png")
         return current_state
 
     def depth_search(self):
