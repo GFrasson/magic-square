@@ -20,6 +20,7 @@ class MagicSquare:
         for row in self.square:
             for element in row:
                 matrix_representation += f'{element} '
+            matrix_representation = matrix_representation.strip()
             matrix_representation += '\n'
 
         return matrix_representation
