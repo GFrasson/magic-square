@@ -1,3 +1,5 @@
+from queue import Queue
+
 from SearchRule import SearchRule
 from SearchTree import SearchTree
 from State import State
@@ -29,7 +31,7 @@ class Search:
         except IndexError:
             return None
 
-    def backtracking_search(self):
+    def backtracking_search(self) -> State:
         current_state = self.tree.root
         new_state: State = None
         success = False
@@ -51,10 +53,36 @@ class Search:
                 current_state = new_state
                 new_state = None
 
-        print(new_state.magic_square)
+        return new_state
 
-    def breadth_search(self):
-        pass
+    def breadth_search(self) -> State:
+        open_states_queue: Queue[State] = Queue()
+        closed_states: list[State] = []
+        
+        open_states_queue.put(self.tree.root)
+
+        new_state: State = None
+        success = False
+
+        while not success:
+            current_state = open_states_queue.get()
+
+            if current_state.is_objective():
+                success = True
+            else:
+                while True:
+                    next_rule = self.__get_next_rule(current_state)
+
+                    if next_rule:
+                        new_state = current_state.visit_new_state(next_rule)
+
+                        if new_state:
+                            open_states_queue.put(new_state)
+                    else:
+                        closed_states.append(current_state)
+                        break
+
+        return current_state
 
     def depth_search(self):
         pass
