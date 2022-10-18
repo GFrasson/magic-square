@@ -5,6 +5,8 @@ from MagicSquare.SearchRule import SearchRule
 
 
 class State:
+    instance_count = 0
+    
     def __init__(self, magic_square: Square = None, parent: State = None) -> None:
         self.__children: list[State] = []
         self.__parent: State = parent
@@ -19,6 +21,9 @@ class State:
 
         self.__magic_square_size = len(self.__magic_square.square[0])
         self.__current_rule_index = 0
+
+        self.__instance_index = State.instance_count
+        State.instance_count += 1
 
     @property
     def magic_square(self) -> Square:
@@ -43,6 +48,10 @@ class State:
     @property
     def parent(self) -> State:
         return self.__parent
+
+    @property
+    def instance_index(self) -> int:
+        return self.__instance_index
 
     def get_child(self, position: int) -> State | None:
         try:
