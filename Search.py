@@ -95,4 +95,33 @@ class Search:
         return current_state
 
     def depth_search(self):
-        pass
+        open_states_stack: list[State] = []
+        closed_states: list[State] = []
+        
+        open_states_stack.append(self.tree.root)
+
+        new_state: State = None
+        success = False
+
+        while not success:
+            current_state = open_states_stack.pop()
+
+            if current_state.is_objective():
+                success = True
+            else:
+                while True:
+                    next_rule = self.__get_next_rule(current_state)
+
+                    if next_rule:
+                        new_state = current_state.visit_new_state(next_rule)
+
+                        if new_state:
+                            open_states_stack.append(new_state)
+                            self.__graph.add_node(pydot.Node(new_state.magic_square.__str__(), shape="box"))
+                            self.__graph.add_edge(pydot.Edge(new_state.parent.magic_square.__str__(), new_state.magic_square.__str__()))
+                    else:
+                        closed_states.append(current_state)
+                        break
+
+        self.__graph.write_png("depth-search-tree.png")
+        return current_state
