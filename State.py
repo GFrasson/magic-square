@@ -88,6 +88,8 @@ class State:
         new_state_invalid = (
             row_count == 2 and row_sum < 6) or (
             column_count == 2 and column_sum < 6) or (
+            primary_diagonal_count == 2 and primary_diagonal_sum < 6) or (
+            secondary_diagonal_count == 2 and secondary_diagonal_sum < 6) or (
             row_count == 3 and row_sum != 15) or (
             column_count == 3 and column_sum != 15) or (
             primary_diagonal_count == 3 and primary_diagonal_sum != 15) or (
