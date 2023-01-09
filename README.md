@@ -7,7 +7,7 @@ Requirements:
 pip install -r requirements.txt
 ```
 
-Graphviz (more info about download <a href="https://graphviz.org/donwload/">here</a>):
+Graphviz (more info about download <a href="https://graphviz.org/download/">here</a>):
 ```bash
 # ----- Linux -----
 
