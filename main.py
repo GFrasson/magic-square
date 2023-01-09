@@ -8,6 +8,7 @@ class SearchMethods(Enum):
     BACKTRACKING = 'Busca Backtracking'
     BREADTH = 'Busca em Largura'
     DEPTH = 'Busca em Profundidade'
+    A_STAR = 'A*'
 
 
 class RuleOrder(Enum):
@@ -57,6 +58,7 @@ if __name__ == '__main__':
         SearchMethods.BACKTRACKING: search.backtracking_search,
         SearchMethods.BREADTH: search.breadth_search,
         SearchMethods.DEPTH: search.depth_search,
+        SearchMethods.A_STAR: search.a_star_search,
     }
 
     chosen_method_function = search_methods[chosen_method]

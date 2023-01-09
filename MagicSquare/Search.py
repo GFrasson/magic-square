@@ -1,10 +1,11 @@
 import pydot
-from queue import Queue
+from queue import Queue, PriorityQueue
 from os import path, mkdir
 
 from MagicSquare.SearchRule import SearchRule
 from MagicSquare.SearchTree import SearchTree
 from MagicSquare.State import State
+from MagicSquare.PrioritizedItem import PrioritizedItem
 
 
 class Search:
@@ -170,6 +171,47 @@ class Search:
 
         self.__paint_solution_path(current_state)
         file_path = path.join(self.__output_dir_path, f"depth-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
+        self.__graph.write_png(file_path)
+
+        return current_state
+
+    def a_star_search(self) -> State:
+        open_states_queue: PriorityQueue[State] = PriorityQueue()
+        closed_states: list[State] = []
+        
+        initial_state = self.tree.root
+        
+        open_states_queue.put(
+            PrioritizedItem(initial_state.evaluation_function_a_star, initial_state)
+        )
+
+        new_state: State = None
+        success = False
+
+        while not success:
+            current_prioritized_item = open_states_queue.get()
+            current_state = current_prioritized_item.item
+
+            if current_state.is_objective():
+                success = True
+            else:
+                while True:
+                    next_rule = self.__get_next_rule(current_state)
+
+                    if next_rule:
+                        new_state = current_state.visit_new_state(next_rule)
+
+                        if new_state:
+                            open_states_queue.put(
+                                PrioritizedItem(new_state.evaluation_function_a_star, new_state)
+                            )
+                            self.__add_state_to_tree(new_state, next_rule.name)
+                    else:
+                        closed_states.append(current_state)
+                        break
+
+        self.__paint_solution_path(current_state)
+        file_path = path.join(self.__output_dir_path, f"a-star-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
         self.__graph.write_png(file_path)
 
         return current_state
