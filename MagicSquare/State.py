@@ -8,6 +8,9 @@ class State:
     instance_count = 0
     
     def __init__(self, magic_square: Square = None, parent: State = None) -> None:
+        self.__instance_index = State.instance_count
+        State.instance_count += 1
+
         self.__children: list[State] = []
         self.__parent: State = parent
         self.__level = 0
@@ -15,19 +18,13 @@ class State:
 
         if self.__parent:
             self.__level = self.parent.level + 1
-            self.__horizontal_level = self.parent.horizontal_level + len(self.parent.children)
+            self.__horizontal_level = self.instance_index if self.level == 1 else self.parent.horizontal_level
             self.__parent.append_child(self)
 
-        if magic_square:
-            self.__magic_square: Square = Square(magic_square.square, magic_square.current_number)
-        else:
-            self.__magic_square: Square = Square()
+        self.__magic_square: Square = Square(magic_square.square, magic_square.current_number) if magic_square else Square()
 
         self.__magic_square_size = len(self.__magic_square.square[0])
         self.__current_rule_index = 0
-
-        self.__instance_index = State.instance_count
-        State.instance_count += 1
 
     @property
     def magic_square(self) -> Square:
