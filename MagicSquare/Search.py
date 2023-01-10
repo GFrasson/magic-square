@@ -86,7 +86,7 @@ class Search:
                 next_rule = self.__get_next_rule(current_state)
 
                 if next_rule:
-                    new_state = current_state.visit_new_state(next_rule)
+                    new_state = current_state.expand_new_state(next_rule)
 
                     if new_state:
                         self.__add_state_to_tree(new_state, next_rule.name)
@@ -126,7 +126,7 @@ class Search:
                     next_rule = self.__get_next_rule(current_state)
 
                     if next_rule:
-                        new_state = current_state.visit_new_state(next_rule)
+                        new_state = current_state.expand_new_state(next_rule)
 
                         if new_state:
                             open_states_queue.put(new_state)
@@ -160,7 +160,7 @@ class Search:
                     next_rule = self.__get_next_rule(current_state)
 
                     if next_rule:
-                        new_state = current_state.visit_new_state(next_rule)
+                        new_state = current_state.expand_new_state(next_rule)
 
                         if new_state:
                             open_states_stack.append(new_state)
@@ -199,7 +199,7 @@ class Search:
                     next_rule = self.__get_next_rule(current_state)
 
                     if next_rule:
-                        new_state = current_state.visit_new_state(next_rule)
+                        new_state = current_state.expand_new_state(next_rule)
 
                         if new_state:
                             open_states_queue.put(
@@ -240,7 +240,7 @@ class Search:
                     next_rule = self.__get_next_rule(current_state)
 
                     if next_rule:
-                        new_state = current_state.visit_new_state(next_rule)
+                        new_state = current_state.expand_new_state(next_rule)
 
                         if new_state:
                             open_states_queue.put(
@@ -281,7 +281,7 @@ class Search:
                     next_rule = self.__get_next_rule(current_state)
 
                     if next_rule:
-                        new_state = current_state.visit_new_state(next_rule)
+                        new_state = current_state.expand_new_state(next_rule)
 
                         if new_state:
                             open_states_queue.put(

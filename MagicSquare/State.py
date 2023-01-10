@@ -127,7 +127,7 @@ class State:
     def __update_current_rule_index(self) -> None:
         self.__current_rule_index += 1
 
-    def visit_new_state(self, rule: SearchRule) -> State | None:
+    def expand_new_state(self, rule: SearchRule) -> State | None:
         self.__update_current_rule_index()
 
         new_state = State(self.magic_square, self)

@@ -71,5 +71,7 @@ if __name__ == '__main__':
     solution_state = chosen_method_function()
     end_time = time()
 
+    print("Solucao:")
     print(solution_state.magic_square)
+    print(f'Custo real: {solution_state.real_cost}')
     print(end_time - start_time, 'seconds')
