@@ -11,10 +11,12 @@ class State:
         self.__children: list[State] = []
         self.__parent: State = parent
         self.__level = 0
+        self.__horizontal_level = 0
 
         if self.__parent:
+            self.__level = self.parent.level + 1
+            self.__horizontal_level = self.parent.horizontal_level + len(self.parent.children)
             self.__parent.append_child(self)
-            self.__level = self.__parent.level + 1
 
         if magic_square:
             self.__magic_square: Square = Square(magic_square.square, magic_square.current_number)
@@ -58,10 +60,14 @@ class State:
     @property
     def level(self) -> int:
         return self.__level
+    
+    @property
+    def horizontal_level(self) -> int:
+        return self.__horizontal_level
 
     @property
     def real_cost(self) -> int:
-        return self.level
+        return self.level + self.horizontal_level
     
     @property
     def heuristic_cost(self) -> int:

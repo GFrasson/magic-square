@@ -215,3 +215,85 @@ class Search:
         self.__graph.write_png(file_path)
 
         return current_state
+
+    def greedy_search(self) -> State:
+        open_states_queue: PriorityQueue[State] = PriorityQueue()
+        closed_states: list[State] = []
+        
+        initial_state = self.tree.root
+        
+        open_states_queue.put(
+            PrioritizedItem(initial_state.heuristic_cost, initial_state)
+        )
+
+        new_state: State = None
+        success = False
+
+        while not success:
+            current_prioritized_item = open_states_queue.get()
+            current_state = current_prioritized_item.item
+
+            if current_state.is_objective():
+                success = True
+            else:
+                while True:
+                    next_rule = self.__get_next_rule(current_state)
+
+                    if next_rule:
+                        new_state = current_state.visit_new_state(next_rule)
+
+                        if new_state:
+                            open_states_queue.put(
+                                PrioritizedItem(new_state.heuristic_cost, new_state)
+                            )
+                            self.__add_state_to_tree(new_state, next_rule.name)
+                    else:
+                        closed_states.append(current_state)
+                        break
+
+        self.__paint_solution_path(current_state)
+        file_path = path.join(self.__output_dir_path, f"greedy-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
+        self.__graph.write_png(file_path)
+
+        return current_state
+
+    def ordered_search(self) -> State:
+        open_states_queue: PriorityQueue[State] = PriorityQueue()
+        closed_states: list[State] = []
+        
+        initial_state = self.tree.root
+        
+        open_states_queue.put(
+            PrioritizedItem(initial_state.real_cost, initial_state)
+        )
+
+        new_state: State = None
+        success = False
+
+        while not success:
+            current_prioritized_item = open_states_queue.get()
+            current_state = current_prioritized_item.item
+
+            if current_state.is_objective():
+                success = True
+            else:
+                while True:
+                    next_rule = self.__get_next_rule(current_state)
+
+                    if next_rule:
+                        new_state = current_state.visit_new_state(next_rule)
+
+                        if new_state:
+                            open_states_queue.put(
+                                PrioritizedItem(new_state.real_cost, new_state)
+                            )
+                            self.__add_state_to_tree(new_state, next_rule.name)
+                    else:
+                        closed_states.append(current_state)
+                        break
+
+        self.__paint_solution_path(current_state)
+        file_path = path.join(self.__output_dir_path, f"ordered-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
+        self.__graph.write_png(file_path)
+
+        return current_state

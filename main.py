@@ -8,6 +8,8 @@ class SearchMethods(Enum):
     BACKTRACKING = 'Busca Backtracking'
     BREADTH = 'Busca em Largura'
     DEPTH = 'Busca em Profundidade'
+    ORDERED = 'Busca Ordenada'
+    GREEDY = 'Busca Gulosa'
     A_STAR = 'A*'
 
 
@@ -58,6 +60,8 @@ if __name__ == '__main__':
         SearchMethods.BACKTRACKING: search.backtracking_search,
         SearchMethods.BREADTH: search.breadth_search,
         SearchMethods.DEPTH: search.depth_search,
+        SearchMethods.ORDERED: search.ordered_search,
+        SearchMethods.GREEDY: search.greedy_search,
         SearchMethods.A_STAR: search.a_star_search,
     }
 
