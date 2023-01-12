@@ -11,7 +11,7 @@ class SearchMethods(Enum):
     DEPTH = 'Busca em Profundidade'
     ORDERED = 'Busca Ordenada'
     GREEDY = 'Busca Gulosa'
-    A_STAR = 'A*'
+    A_STAR = 'A Estrela'
 
 
 class RuleOrder(Enum):
