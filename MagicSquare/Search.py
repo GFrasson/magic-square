@@ -178,6 +178,9 @@ class Search:
     def a_star_search(self) -> State:
         open_states_queue: PriorityQueue[State] = PriorityQueue()
         closed_states: list[State] = []
+
+        open_states_result: list[PrioritizedItem] = []
+        closed_states_result: list[PrioritizedItem] = []
         
         initial_state = self.tree.root
         
@@ -191,6 +194,8 @@ class Search:
         while not success:
             current_prioritized_item = open_states_queue.get()
             current_state = current_prioritized_item.item
+
+            open_states_result.append(current_prioritized_item)
 
             if current_state.is_objective():
                 success = True
@@ -208,17 +213,21 @@ class Search:
                             self.__add_state_to_tree(new_state, next_rule.name)
                     else:
                         closed_states.append(current_state)
+                        closed_states_result.append(current_prioritized_item)
                         break
 
         self.__paint_solution_path(current_state)
         file_path = path.join(self.__output_dir_path, f"a-star-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
         self.__graph.write_png(file_path)
 
-        return current_state
+        return current_state, open_states_result, closed_states_result
 
     def greedy_search(self) -> State:
         open_states_queue: PriorityQueue[State] = PriorityQueue()
         closed_states: list[State] = []
+
+        open_states_result: list[PrioritizedItem] = []
+        closed_states_result: list[PrioritizedItem] = []
         
         initial_state = self.tree.root
         
@@ -232,6 +241,8 @@ class Search:
         while not success:
             current_prioritized_item = open_states_queue.get()
             current_state = current_prioritized_item.item
+
+            open_states_result.append(current_prioritized_item)
 
             if current_state.is_objective():
                 success = True
@@ -249,17 +260,21 @@ class Search:
                             self.__add_state_to_tree(new_state, next_rule.name)
                     else:
                         closed_states.append(current_state)
+                        closed_states_result.append(current_prioritized_item)
                         break
 
         self.__paint_solution_path(current_state)
         file_path = path.join(self.__output_dir_path, f"greedy-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
         self.__graph.write_png(file_path)
 
-        return current_state
+        return current_state, open_states_result, closed_states_result
 
     def ordered_search(self) -> State:
         open_states_queue: PriorityQueue[State] = PriorityQueue()
         closed_states: list[State] = []
+
+        open_states_result: list[PrioritizedItem] = []
+        closed_states_result: list[PrioritizedItem] = []
         
         initial_state = self.tree.root
         
@@ -273,6 +288,8 @@ class Search:
         while not success:
             current_prioritized_item = open_states_queue.get()
             current_state = current_prioritized_item.item
+
+            open_states_result.append(current_prioritized_item)
 
             if current_state.is_objective():
                 success = True
@@ -290,10 +307,11 @@ class Search:
                             self.__add_state_to_tree(new_state, next_rule.name)
                     else:
                         closed_states.append(current_state)
+                        closed_states_result.append(current_prioritized_item)
                         break
 
         self.__paint_solution_path(current_state)
         file_path = path.join(self.__output_dir_path, f"ordered-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
         self.__graph.write_png(file_path)
 
-        return current_state
+        return current_state, open_states_result, closed_states_result
