@@ -105,7 +105,7 @@ class Search:
         file_path = path.join(self.__output_dir_path, f"backtracking-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
         self.__graph.write_png(file_path)
 
-        return new_state
+        return new_state, [], []
 
     def breadth_search(self) -> State:
         open_states_queue: Queue[State] = Queue()
@@ -139,7 +139,7 @@ class Search:
         file_path = path.join(self.__output_dir_path, f"breadth-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
         self.__graph.write_png(file_path)
 
-        return current_state
+        return current_state, [], []
 
     def depth_search(self):
         open_states_stack: list[State] = []
@@ -173,7 +173,7 @@ class Search:
         file_path = path.join(self.__output_dir_path, f"depth-search-tree-{'desc' if self.__rules_desc else 'asc'}.png")
         self.__graph.write_png(file_path)
 
-        return current_state
+        return current_state, [], []
 
     def a_star_search(self) -> State:
         open_states_queue: PriorityQueue[State] = PriorityQueue()
